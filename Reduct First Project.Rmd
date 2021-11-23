@@ -1,0 +1,143 @@
+---
+title: "Multiple Linear Regression"
+author: "Saishab"
+date: "November 19, 2021"
+output:
+  '': default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Linear Regression
+
+Linear regression is a simple statistical regression method used for predictive analysis.It shows the relationship between the continuous variables. Linear regression shows the linear relationship between the independent variable  and the dependent variables.If we have only one independent variable and one dependent variable then it is said to be linear regression and if we have more than one independent variable then it is said to be multiple linear regression.
+You can get more Knowledge on Linear Regression from this article : <https://www.digitalvidya.com/blog/linear-regression/>.
+
+The dataset contains observations on the percentage of people biking to work each day, the percentage of people smoking, and the percentage of people with heart disease.
+
+## Loading Data
+```{r data}
+data = read.csv("Data/heart.data.csv")
+
+```
+View Data 
+
+```{r}
+head(data)
+```
+
+Here we see we have unwanted Column X Lets remove it 
+```{r}
+df = subset(data,select = -c(X))
+head(df)
+```
+Dimension of Dataframe : Which helps us to define Statistics of Data.
+```{r}
+dim(df)
+```
+
+So we have 498 rows(instances) and 3 Columns( Attributes).Lets See the Descriptive Statistics of our Data 
+```{r}
+summary(df)
+```
+
+Here we can observe different Statistical Terms,
+1. Min : Minimum Value in the attribute. This is also refered as 0th percentile as no value is less than this.
+2. 1st Quartile : This is known as the lower or 25th empirical quartile, 25% of the data from our data set lies below this point.For Biking attribute we have 1st quartile as 20.205 which means 25% of or data falls below 20.205.
+3. Median : Median is the mid value associated in the attributes , If the no. of observations(vectors) are odd  then Median provides      middle value, and if it is Even then provides average of two medians.
+4. Mean : It provides average value of input vector.
+5. 3rd Quartile : This is upper or 75th empirical quartile , 75% of the data from our data set have values less than 57.853
+6. Max : Maximum Value in the attribute also refered as 100th Percentile as no value is more than it.
+
+##Outliers Detection 
+In Descriptive Stat of our data , we saw difference between maximum and minimum value is more this can happen because of outliers.Outliers are the data points which differes from the normal value in the dataset. As we can see we have 35.824 as median in Biking attribute and maximum value is 74.907 so this value might be the outlier in Biking , lets confrim this with Box Plot for each attributes.
+
+
+```{r}
+boxplot(df$biking,ylab = 'Biking')
+boxplot(df$smoking, ylab = "Smoking")
+boxplot(df$heart.disease,ylab = 'Heart Disease')
+```
+
+Here, we can see we don't have any outliers in the provided attributes.So we can move for Modeling of data. Since we are using Linear Regression so we should see the linearlity between the attributes and define them as dependent and independent varaiables
+
+Smoking : Independent Varaiable
+Biking : Independent Varaiable
+Heart Disease : Dependent Varaiable
+
+Problem Statement : 
+Our dependent varaiable is dependent in independent varaiable, in simple word we are observing how well  person's Heart Disease is dependent/ affected  by their behavior of Smoking and Biking.
+
+We can observe these dependencies by Plotting Scatter plot and using correlation fucntion.
+
+1.Scatter Plot : A Scatter  Plot  plots the points that show the relationship between two sets of data.
+2.Correlation : It shows degree in which relationship exist between variables. It ranges from (-1,1), -1 for strong negative relationship and +1 for strong positive relationship.
+
+
+```{r}
+plot(heart.disease ~ biking , data = df )
+plot(heart.disease ~ smoking , data = df)
+
+```
+
+
+Here from scatter plot, we can see the negative relationship between Heart Disease and Biking , and some sort of positive relationsip between Heart Disease and Smoking , lets check this with help of cor() function
+
+```{r}
+cor(df$heart.disease, df$smoking)
+cor(df$heart.disease,df$biking)
+```
+The relation between Heart Disease and Smoking is 0.309131 which can be considered as +ve correlation.
+The relation between Heart Disease and Biking is -0.9354555 which is strong negative correlation.
+
+## Multicollinearity 
+This will be our problem if we have strong relationship between the independent variables, our independent varaibles should not have any form of dependencies within them
+
+```{r}
+cor(df$biking,df$smoking)
+```
+We see the correlation score is 0.0151 which is neglegible, so there's no any dependencies between the independent varaibles.
+
+##Linear Model 
+Our main task is to see the relationship between dependent varaiables and independent varaiables, so we fit a linear model with heart disease which is our dependent varaibale and biking and smoking is our independent variables. 
+For this we use lm model. lm us used to fit linear models which is used for regression. The equation of Linear Regression is :
+ y = mx + c , where m is our Coefficients, X our predictor and c is the contant i.e. y intercept.
+
+```{r}
+linear_model = lm(heart.disease ~ biking + smoking ,data = df )
+summary(linear_model)
+```
+
+Parameters :
+1.Residuals : Residual is the difference between the observed value and the mean value that the model predicts for that particular observation. Here observation are the Min,1Q, Median,3Q,Max.
+
+2.Coefficients and Intercepts  :Coefficients are estimates of the unknown population parameters and describe the relationship between a predictor variable and the response. In linear regression, coefficients are the values that multiply the predictor values.Intercepts are the expected mean value of Dependent variable(Y) when all dependent variables (X) is equal to 0.
+
+```{r}
+cat('Heart Disease = ',linear_model$coefficients[1],' + ',linear_model$coefficients[2], '* Biking',' + ', linear_model$coefficients[3],' *
+Smoking')
+```
+ Here :
+- Intercept : 14.98466
+- Coefficients : -0.2001331 for Biking and 0.1783339 for Smoking 
+
+
+3.Signif.codes : They represent which attribute with p value  is statisticaly significant.You can get more details from this article <https://www.statology.org/significance-codes-in-r/>
+
+4. Residual standard Error : Residual Standard Error is measure of the quality of a linear regression fit and 495 degrees of freedom is given by the difference between the number of observations in  sample and the number of variables in model.
+
+5.Multiple R - Squared and Adjusted R - Squared : While using multiple indpendent varaiables in model the R square keeps on increasing. R square tells us about that how much variance is been explained by the model. Adjusted R - Squared calculate R square from only those variables whose addition in the model which are significant.
+
+
+```
+
+
+Conclusion of Project :
+1.Estimated Effect of Biking on Heart Disease is -0.2001331 , means for every 1% increase in biking to work, there is decrease in heart disease by 0.20% .
+2. Estimated effect of Smoking on Heart Disease is 0.1783339 , means there is 0.178% increase in Heart Disease for person who smokes.
+
+
+ 
