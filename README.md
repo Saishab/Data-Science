@@ -5,4 +5,4 @@ This Project deals with Supervised Machine Learning algorithms, Linear Regressio
 1. What Linear Regression is all about
 2.MultiCollinearity in Regression
 3.Outliers in Dataset.
-4.Dependencies of Dependent Variables in Independent Variables and effect of these independent variables in Dependent.
+4.Dependencies of Dependent Variables in Independent Variables and effect of these independent variables in dependent.
